@@ -4,6 +4,7 @@ import { FeedbackOptions } from '../FeedbackOptions';
 import { Section } from '../Section';
 import { Container, PieChartBox, StatBox } from './App.styled';
 import { PieChart } from 'react-minimal-pie-chart';
+import { Notification } from '../Notification';
 
 export function App() {
   const [good, incGood] = useState(0);
@@ -34,15 +35,13 @@ export function App() {
     return Math.round((100 * good) / countTotalFeedback());
   };
 
-  const PieChartMemo = memo((props) => {
+  const PieChartMemo = memo(props => {
     const { data } = props;
     return (
       <PieChart
         data={data}
         animate
-        label={({ dataEntry }) =>
-          dataEntry.value ? dataEntry.value : ''
-        }
+        label={({ dataEntry }) => (dataEntry.value ? dataEntry.value : '')}
         labelStyle={() => ({
           fill: 'black',
           fontSize: '7px',
@@ -58,22 +57,23 @@ export function App() {
     <Container>
       <Section title="Feedback options">
         <FeedbackOptions
-          options={["good","bad","neutral"]}
+          options={['good', 'bad', 'neutral']}
           onLeaveFeedback={changeState}
         />
       </Section>
       <Section title="Statistics">
-        <StatBox>
-          <div>
-            <Statistics
-              good={good}
-              neutral={neutral}
-              bad={bad}
-              total={countTotalFeedback()}
-              positivePercentage={countPositiveFeedbackPercentage()}
-            />
-          </div>
-          {countTotalFeedback() > 0 && (
+        {countTotalFeedback() > 0 ? (
+          <StatBox>
+            <div>
+              <Statistics
+                good={good}
+                neutral={neutral}
+                bad={bad}
+                total={countTotalFeedback()}
+                positivePercentage={countPositiveFeedbackPercentage()}
+              />
+            </div>
+
             <PieChartBox>
               <PieChartMemo
                 data={[
@@ -83,8 +83,10 @@ export function App() {
                 ]}
               />
             </PieChartBox>
-          )}
-        </StatBox>
+          </StatBox>
+        ) : (
+          <Notification message="There is no feedback" />
+        )}
       </Section>
     </Container>
   );
